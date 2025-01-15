@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -36,16 +36,23 @@ DB = 'sqlite:///learning.db'
 engine = create_engine(DB, echo = True)
 # print(engine)
 
-#buat table di daatabase
-Base.metadata.create_all(engine)
+if not engine.dialect.has_table(engine, "MasterDataStudents"):
+    Base.metadata.create_all(engine)
 
 #buat session untuk koneksi ke database
 Session = sessionmaker(bind= engine)
 session = Session()
 
 
-#create User
-new_user = MasterDataStudents(id="3110161054", name="Yulian SUrya PRayogo", class_name="Mekatronika")
-session.add(new_user)
-session.commit()
+# create User
+# new_user = MasterDataStudents(id="3110161054", name="Yulian SUrya PRayogo", class_name="Mekatronika")
+# session.add(new_user)
+# session.commit()
+
+#making query
+master_data = session.query(MasterDataStudents).filter_by(name='aan').all()
+
+print(len(master_data))
+for data in master_data:
+    print(data.dict_format())
 
