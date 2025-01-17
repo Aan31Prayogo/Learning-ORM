@@ -10,18 +10,20 @@ class MasterDataStudents(Base):
     __tablename__ = "MasterDataStudents"
     
     #buat column
-    id = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    reg_number = Column(String)
     name = Column(String, nullable=False)
     class_name = Column(String)
     
-    def __repr___(self):
-        return f"<User(id={self.id}, name={self.name}, email={self.email})>"
+    # def __repr___(self):
+    #     return f"<User(id={self.id}, name={self.name}, email={self.email})>"
     
     def dict_format(self):
         return {
             'id' : self.id,
             'name' : self.name,
-            'class_name' : self.class_name
+            'class_name' : self.class_name,
+            'reg_number': self.reg_number
         }
 
     
@@ -47,13 +49,14 @@ session = Session()
 
 
 # create User
-# new_user = MasterDataStudents(id="3110161054", name="Yulian SUrya PRayogo", class_name="Mekatronika")
+# new_user = MasterDataStudents(reg_number="3110161021", name="sasuke", class_name="Mekatronika")
 # session.add(new_user)
 # session.commit()
 
 #making query
-# master_data = session.query(MasterDataStudents).all()
-# for data in master_data:
-#     if data.id == '3110161054':
-#         data.name = 'aan'
-#         session.commit()
+try:
+    students = session.query(MasterDataStudents).order_by(MasterDataStudents.id)
+    for student in students:
+        print(student.dict_format())
+except Exception as e:
+    print(f"error with {e}")
