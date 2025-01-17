@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, Column, Integer, String, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-
 #buat class template dari baseClase
 Base = declarative_base()
 
@@ -36,10 +35,13 @@ DB = 'sqlite:///learning.db'
 engine = create_engine(DB, echo = True)
 # print(engine)
 
-if not engine.dialect.has_table(engine, "MasterDataStudents"):
+
+#inspect if engine already has a table 
+table_exist = inspect(engine).has_table("MasterDataStudents")
+if not table_exist:
     Base.metadata.create_all(engine)
 
-#buat session untuk koneksi ke database
+# #buat session untuk koneksi ke database
 Session = sessionmaker(bind= engine)
 session = Session()
 
@@ -50,9 +52,8 @@ session = Session()
 # session.commit()
 
 #making query
-master_data = session.query(MasterDataStudents).filter_by(name='aan').all()
-
-print(len(master_data))
-for data in master_data:
-    print(data.dict_format())
-
+# master_data = session.query(MasterDataStudents).all()
+# for data in master_data:
+#     if data.id == '3110161054':
+#         data.name = 'aan'
+#         session.commit()
