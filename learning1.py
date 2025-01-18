@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+
 #buat class template dari baseClase
 Base = declarative_base()
 
@@ -19,13 +20,7 @@ class MasterDataStudents(Base):
     #     return f"<User(id={self.id}, name={self.name}, email={self.email})>"
     
     def dict_format(self):
-        return {
-            'id' : self.id,
-            'name' : self.name,
-            'class_name' : self.class_name,
-            'reg_number': self.reg_number
-        }
-
+        return {column.name : getattr(self, column.name) for column in self.__table__.columns}
     
 class ClassA1(Base):
     __tablename__ = "ClassA1"
@@ -55,8 +50,9 @@ session = Session()
 
 #making query
 try:
-    students = session.query(MasterDataStudents).order_by(MasterDataStudents.id)
-    for student in students:
-        print(student.dict_format())
+    students = session.query(MasterDataStudents).filter_by(name='sasuke').all()
+    students_dicts = [student.dict_format() for student in students]
+    print(students_dicts)
 except Exception as e:
     print(f"error with {e}")
+    
