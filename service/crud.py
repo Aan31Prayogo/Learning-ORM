@@ -24,3 +24,29 @@ def create_user(db: Session, user_data: dict):
         print(f"error with {e}")
         return False
         
+def update_user_by_name(db: Session, user_name:str, user_data: dict):
+    try:
+        user = db.query(Users).filter_by(name=user_name).first()
+        if user:
+            user.age = user_data['age']
+            db.commit()
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"error with {e}")
+        return False
+
+def delete_user_by_name(db: Session, user_name:str):
+    try:
+        user = db.query(Users).filter_by(name=user_name).first()
+        if user:
+            db.delete(user)
+            db.commit()
+            return True
+        else:
+            return False
+    
+    except Exception as e:
+        print(f"error with {e}")
+        return False
