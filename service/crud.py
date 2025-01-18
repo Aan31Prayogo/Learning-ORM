@@ -4,7 +4,11 @@ from sqlalchemy.orm import Session
 import uuid
 
 def get_user(db:Session, user_name:str):
-    return db.query(Users).filter_by(name = user_name).all()
+    users = db.query(Users).filter_by(name = user_name).all()
+    if users:
+        return [user.dict_format() for user in users]
+    else:
+        return False
 
 def create_user(db: Session, user_data: dict):
     try:

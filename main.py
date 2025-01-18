@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
-from models.model import RequestModel, ResponseModel
+from models.model import RequestModel
 from database.database import get_db, check_table
 from sqlalchemy.orm import Session
-from service.crud import create_user
+from service.crud import create_user, get_user
+from service.helper import create_response
 import uvicorn
 
 app = FastAPI()
@@ -13,37 +14,46 @@ app = FastAPI()
 def home():
     return {"Hello": "world"}
 
+@app.get("/user/getuser/{user_name}")
+def get_user_by_name(user_name:str, db: Session= Depends(get_db)):
+    try:
+        result = get_user(db,user_name)
+        if not result:
+            return create_response(status= False, data= "User Not Found",  status_code=404 )
+        return create_response(status=True, data=result)
+    except Exception as e:
+        print(f"error")
+        return create_response(
+            status = False,
+            data = str(e),
+            status_code=500
+        )
+            
 @app.post("/user/newuser/")
 def mew_user(payload:RequestModel, db:Session = Depends(get_db)):
+    
     result = False
     try:
         dict_payload = payload.model_dump()
         result = create_user(db,dict_payload)
         
         if result:
-            return JSONResponse(
-                status_code=200,
-                content= ResponseModel(
-                    status= True,
-                    data =  [dict_payload]
-                ).model_dump()
+            return create_response(
+                status= True,
+                data = dict_payload
             )
         else:
-            return JSONResponse(
-                status_code=500,
-                content= ResponseModel(
-                    status= False,
-                    data =  [dict_payload]
-                ).model_dump()
-            )
-            
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content= ResponseModel(
+            return create_response(
                 status= False,
-                data = [{"message" : str(e)}]
-            ).model_dump()
+                status_code=500,
+                data = [result]
+            )
+        
+    except Exception as e:
+        return create_response(
+            status= False,
+            status_code=500,
+            data = str(e)
         )
             
 

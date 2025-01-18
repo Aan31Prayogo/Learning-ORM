@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any, List, Dict, Union
 from database.database import Base
 from sqlalchemy import Column, Integer, String
 
@@ -10,7 +10,7 @@ class RequestModel(BaseModel):
     
 class ResponseModel(BaseModel):
     status : bool
-    data : list
+    data: Union[List[Dict[str, Any]], Any]
     
 class Users(Base):
     __tablename__ = "Users"
@@ -18,5 +18,7 @@ class Users(Base):
     name = Column(String(100))
     phone_number = Column(String(20))
     age = Column(Integer)
-
+    
+    def dict_format(self):
+        return {column.name : getattr(self, column.name) for column in self.__table__.columns}
     
