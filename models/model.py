@@ -17,5 +17,6 @@ class Users(Base):
     id = Column(String, primary_key=True, index=True)
     name = Column(String(100))
     phone_number = Column(String(20))
+    age = Column(Integer)
 
     
