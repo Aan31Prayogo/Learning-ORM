@@ -15,9 +15,9 @@ def home():
     return {"Hello": "world"}
 
 @app.get("/user/getuser/{user_name}")
-def get_user_by_name(user_name:str, db: Session= Depends(get_db)):
+async def get_user_by_name(user_name:str, db: Session= Depends(get_db)):
     try:
-        result = get_user(db,user_name)
+        result = await get_user(db,user_name)
         if not result:
             return create_response(status= False, data= "User Not Found",  status_code=404 )
         return create_response(status=True, data=result)
@@ -29,11 +29,11 @@ def get_user_by_name(user_name:str, db: Session= Depends(get_db)):
         )
             
 @app.post("/user/new-user/")
-def mew_user(payload:RequestModel, db:Session = Depends(get_db)):   
+async def mew_user(payload:RequestModel, db:Session = Depends(get_db)):   
     result = False
     try:
         dict_payload = payload.model_dump()
-        result = create_user(db,dict_payload)
+        result = await create_user(db,dict_payload)
         
         if result:
             return create_response(
@@ -54,11 +54,11 @@ def mew_user(payload:RequestModel, db:Session = Depends(get_db)):
         )
 
 @app.put("/user/update-user/{user_name}")
-def update_existing_user(payload: RequestModel, user_name:str, db: Session = Depends(get_db)):
+async def update_existing_user(payload: RequestModel, user_name:str, db: Session = Depends(get_db)):
     result = False
     try:    
         dict_payload = payload.model_dump()
-        result = update_user_by_name(db, user_name, dict_payload)
+        result = await update_user_by_name(db, user_name, dict_payload)
         if result:
             return create_response(
                 status= True,
@@ -79,10 +79,10 @@ def update_existing_user(payload: RequestModel, user_name:str, db: Session = Dep
 
 
 @app.delete("/user/delete-user/{user_name}")
-def delete_existing_user(user_name:str, db: Session = Depends(get_db)):
+async def delete_existing_user(user_name:str, db: Session = Depends(get_db)):
     try:
         print("masuk sini")
-        result = delete_user_by_name(db,user_name)
+        result = await delete_user_by_name(db,user_name)
         if not result:
             return create_response(status= False, data= "User Not Found",  status_code=404 )
         return create_response(status=True, data=result)

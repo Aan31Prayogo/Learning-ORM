@@ -3,14 +3,14 @@ from models.model import Users
 from sqlalchemy.orm import Session
 import uuid
 
-def get_user(db:Session, user_name:str):
+async def get_user(db:Session, user_name:str):
     users = db.query(Users).filter_by(name = user_name).all()
     if users:
         return [user.dict_format() for user in users]
     else:
         return False
 
-def create_user(db: Session, user_data: dict):
+async def create_user(db: Session, user_data: dict):
     try:
         new_user = Users(id= str(uuid.uuid4()), 
                          name = user_data['name'], 
@@ -24,7 +24,7 @@ def create_user(db: Session, user_data: dict):
         print(f"error with {e}")
         return False
         
-def update_user_by_name(db: Session, user_name:str, user_data: dict):
+async def update_user_by_name(db: Session, user_name:str, user_data: dict):
     try:
         user = db.query(Users).filter_by(name=user_name).first()
         if user:
@@ -37,7 +37,7 @@ def update_user_by_name(db: Session, user_name:str, user_data: dict):
         print(f"error with {e}")
         return False
 
-def delete_user_by_name(db: Session, user_name:str):
+async def delete_user_by_name(db: Session, user_name:str):
     try:
         user = db.query(Users).filter_by(name=user_name).first()
         if user:
